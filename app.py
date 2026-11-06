@@ -1,9 +1,10 @@
 import os
 import zipfile
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
+# current folder ထဲက html များကို ရှာဖွေစေရန် template_folder='.' ထည့်ထားခြင်း
+app = Flask(__name__, template_folder='.')
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -14,7 +15,6 @@ def index():
     error = None
     
     if request.method == 'POST':
-        # Form ကနေ ဖိုင်ပါလာခြင်း ရှိမစစ်ဆေးခြင်း
         if 'zip_file' not in request.files or 'wordlist_file' not in request.files:
             error = "ဖိုင်များ မပြည့်စုံပါ။"
             return render_template('index.html', result=result, error=error)
@@ -36,7 +36,6 @@ def index():
             zip_file.save(zip_path)
             wordlist_file.save(wordlist_path)
             
-            # Password Attack စတင်ခြင်း
             found_password = None
             try:
                 with zipfile.ZipFile(zip_path) as zf:
@@ -57,7 +56,6 @@ def index():
             except Exception as e:
                 error = f"Error ဖြစ်ပေါ်သည်: {str(e)}"
             
-            # အသုံးပြုပြီး ဖိုင်များကို ပြန်ဖျက်ရန် (Disk Space ရှင်းလင်းရန်)
             if os.path.exists(zip_path): os.remove(zip_path)
             if os.path.exists(wordlist_path): os.remove(wordlist_path)
             
