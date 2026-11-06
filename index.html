@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIP Password Cracker Web</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="file"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 10px; font-size: 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; text-align: center; }
+        .error { margin-top: 20px; padding: 10px; background: #f8d7da; color: #721c24; border-radius: 4px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>ZIP Cracker Web</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Locked ZIP ဖိုင် ရွေးရန်:</label>
+                <input type="file" name="zip_file" required>
+            </div>
+            <div class="form-group">
+                <label>Wordlist ဖိုင် (.txt) ရွေးရန်:</label>
+                <input type="file" name="wordlist_file" required>
+            </div>
+            <button type="submit">Password စစ်ဆေးမည်</button>
+        </form>
 
+        {% if result %}
+            <div class="result">{{ result }}</div>
+        {% endif %}
+        
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {%
