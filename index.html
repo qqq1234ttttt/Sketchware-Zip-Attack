@@ -13,7 +13,7 @@
         input[type="file"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
         button { width: 100%; background: #007bff; color: white; border: none; padding: 10px; font-size: 16px; border-radius: 4px; cursor: pointer; }
         button:hover { background: #0056b3; }
-        .result { margin-top: 20px; padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; text-align: center; }
+        .result { margin-top: 20px; padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; text-align: center; word-break: break-all; }
         .error { margin-top: 20px; padding: 10px; background: #f8d7da; color: #721c24; border-radius: 4px; text-align: center; }
     </style>
 </head>
@@ -38,4 +38,7 @@
         
         {% if error %}
             <div class="error">{{ error }}</div>
-        {%
+        {% endif %}
+    </div>
+</body>
+</html>
