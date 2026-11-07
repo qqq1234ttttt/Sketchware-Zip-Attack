@@ -48,7 +48,7 @@ def upload_files():
         with open(wordlist_path, 'rb') as f:
             total_lines = sum(1 for _ in f)
     except Exception as e:
-        return jsonify({"error": f"ဖိုင်ဖတ်ရှုရာတွင် အမှားအယွင်းရှိသည်: {str(e)}"})
+        return jsonify({"error": f"ဖိုင်ဖတ်ရှုရာတွင်အမှားအယွင်းရှိသည်: {str(e)}"})
 
     # အခြေအနေများကို အစပျိုးမည်
     progress_status = {
