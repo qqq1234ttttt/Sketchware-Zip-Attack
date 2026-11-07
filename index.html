@@ -3,42 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIP Password Cracker Web</title>
+    <title>ZIP Password Cracker - Live Logs</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; box-sizing: border-box; }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="file"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; background: #fafafa; }
-        button { width: 100%; background: #007bff; color: white; border: none; padding: 10px; font-size: 16px; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        .result { margin-top: 20px; padding: 10px; background: #d4edda; color: #155724; border-radius: 4px; text-align: center; word-break: break-all; }
-        .error { margin-top: 20px; padding: 10px; background: #f8d7da; color: #721c24; border-radius: 4px; text-align: center; }
+        body { font-family: 'Courier New', Courier, monospace; background-color: #0f172a; color: #38ef7d; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; max-width: 550px; box-sizing: border-box; border: 1px solid #334155; }
+        h2 { text-align: center; color: #f8fafc; margin-bottom: 25px; letter-spacing: 1px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #94a3b8; }
+        input[type="file"] { width: 100%; padding: 10px; border: 1px solid #475569; border-radius: 6px; box-sizing: border-box; background: #0f172a; color: #f8fafc; cursor: pointer; }
+        button { width: 100%; background: linear-gradient(135deg, #00b09b, #96c93d); color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.9; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        
+        /* Terminal Logs စတိုင် */
+        .terminal-box { margin-top: 20px; background: #000; border: 1px solid #00ff66; border-radius: 6px; padding: 15px; height: 180px; overflow-y: auto; font-size: 14px; display: none; box-shadow: inset 0 0 10px rgba(0,255,102,0.2); }
+        .log-line { margin: 4px 0; word-break: break-all; }
+        
+        /* Progress Bar */
+        .progress-container { margin-top: 20px; display: none; }
+        .progress-bar-bg { width: 100%; background: #334155; border-radius: 4px; height: 10px; overflow: hidden; margin-top: 5px; }
+        .progress-bar-fill { width: 0%; height: 100%; background: #38ef7d; transition: width 0.1s ease; }
+        .progress-text { font-size: 13px; color: #94a3b8; display: flex; justify-content: space-between; margin-top: 5px; }
+
+        .result { margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #34d399; border-radius: 6px; text-align: center; font-weight: bold; display: none; }
+        .error { margin-top: 20px; padding: 15px; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; border-radius: 6px; text-align: center; display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>ZIP Cracker Web</h2>
-        <form method="POST" enctype="multipart/form-data">
+        <h2>ZIP Password Cracker</h2>
+        <form id="crackForm">
             <div class="form-group">
                 <label>Locked ZIP ဖိုင် ရွေးရန်:</label>
-                <input type="file" name="zip_file" accept=".zip" required>
+                <input type="file" id="zip_file" accept=".zip" required>
             </div>
             <div class="form-group">
                 <label>Wordlist ဖိုင် (.txt) ရွေးရန်:</label>
-                <input type="file" name="wordlist_file" accept=".txt" required>
+                <input type="file" id="wordlist_file" accept=".txt" required>
             </div>
-            <button type="submit">Password စစ်ဆေးမည်</button>
+            <button type="submit" id="submitBtn">Password စတင်စစ်ဆေးမည်</button>
         </form>
 
-        {% if result %}
-            <div class="result">{{ result }}</div>
-        {% endif %}
-        
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
+        <!-- Progress Section -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-text">
+                <span id="progressCountText">စစ်ဆေးပြီးစီးမှု: 0 / 0</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+        </div>
+
+        <!-- Terminal Logs -->
+        <div class="terminal-box" id="terminalBox">
+            <div class="log-line" style="color: #64748b;">[System] စနစ် စတင်နေပါပြီ...</div>
+        </div>
+
+        <div class="result" id="resultBox"></div>
+        <div class="error" id="errorBox"></div>
     </div>
+
+    <script>
+        const form = document.getElementById('crackForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const terminalBox = document.getElementById('terminalBox');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const progressCountText = document.getElementById('progressCountText');
+        const progressPercent = document.getElementById('progressPercent');
+        const resultBox = document.getElementById('resultBox');
+        const errorBox = document.getElementById('errorBox');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI States Reset
+            submitBtn.disabled = true;
+            submitBtn.innerText = "စစ်ဆေးနေသည်...";
+            progressContainer.style.display = 'block';
+            terminalBox.style.display = 'block';
+            terminalBox.innerHTML = '<div class="log-line" style="color: #64748b;">[System] Wordlist ဖိုင်ကို ဖတ်ရှုနေပါပြီ...</div>';
+            resultBox.style.display = 'none';
+            errorBox.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('zip_file', document.getElementById('zip_file').files[0]);
+            formData.append('wordlist_file', document.getElementById('wordlist_file').files[0]);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    errorBox.innerText = data.error;
+                    errorBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Password စတင်စစ်ဆေးမည်";
+                    progressContainer.style.display = 'none';
+                    return;
+                }
+
+                // Server-Sent Events (SSE) ဖြင့် Real-time Live Logs လက်ခံရန်
+                const eventSource = new EventSource('/stream');
+                
+                eventSource.onmessage = function(event) {
+                    const status = JSON.parse(event.data);
+                    
+                    const current = status.current_count;
+                    const total = status.total_passwords;
+                    const percent = total > 0 ? ((current / total) * 100).toFixed(1) : 0;
+                    
+                    // Progress Update
+                    progressCountText.innerText = `စစ်ဆေးပြီးစီးမှု: ${current} / ${total}`;
+                    progressPercent.innerText = `${percent}%`;
+                    progressBarFill.style.width = `${percent}%`;
+
+                    // Terminal Log အသစ်ထည့်ရန်
+                    if (status.current_password) {
+                        const logLine = document.createElement('div');
+                        logLine.className = 'log-line';
+                        logLine.innerHTML = `[Trying] <span style="color: #f39c12;">${status.current_password}</span> (Count: ${current}/${total})`;
+                        terminalBox.appendChild(logLine);
+                        terminalBox.scrollTop = terminalBox.scrollHeight; // အောက်ဆုံးသို့ Auto Scroll ဆွဲရန်
+                    }
+
+                    // ပြီးဆုံးသွားပါက
+                    if (!status.running) {
+                        eventSource.close();
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Password စတင်စစ်ဆေးမည်";
+
+                        if (status.result) {
+                            resultBox.innerText = status.result;
+                            resultBox.style.display = 'block';
+                            const successLog = document.createElement('div');
+                            successLog.className = 'log-line';
+                            successLog.style.color = '#34d399';
+                            successLog.innerHTML = `[Success] ${status.result}`;
+                            terminalBox.appendChild(successLog);
+                        } else if (status.error) {
+                            errorBox.innerText = status.error;
+                            errorBox.style.display = 'block';
+                            const errLog = document.createElement('div');
+                            errLog.className = 'log-line';
+                            errLog.style.color = '#f87171';
+                            errLog.innerHTML = `[Error] ${status.error}`;
+                            terminalBox.appendChild(errLog);
+                        }
+                    }
+                };
+
+                eventSource.onerror = function() {
+                    eventSource.close();
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Password စတင်စစ်ဆေးမည်";
+                };
+
+            } catch (err) {
+                errorBox.innerText = "ချိတ်ဆက်မှု အမှားအယွင်း ရှိနေပါသည်။";
+                errorBox.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Password စတင်စစ်ဆေးမည်";
+            }
+        });
+    </script>
 </body>
 </html>
