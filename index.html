@@ -83,7 +83,7 @@
             submitBtn.innerText = "စစ်ဆေးနေသည်...";
             progressContainer.style.display = 'block';
             terminalBox.style.display = 'block';
-            terminalBox.innerHTML = '<div class="log-line" style="color: #64748b;">[System]မှ Password ဖိုင်ကိုဖတ်ရှုနေပါပြီ...</div>';
+            terminalBox.innerHTML = '<div class="log-line" style="color: #64748b;">[System]မှPasswordဖိုင်ကိုဖတ်ရှုနေပါပြီ...</div>';
             resultBox.style.display = 'none';
             errorBox.style.display = 'none';
 
@@ -126,7 +126,7 @@
                     if (status.current_password) {
                         const logLine = document.createElement('div');
                         logLine.className = 'log-line';
-                        logLine.innerHTML = `[Trying] <span style="color: #f39c12;">${status.current_password}</span> (Count: ${current}/${total})`;
+                        logLine.innerHTML = `[Trying] <span style="color: #f39c12;">${status.current_password}</span>(Count:${current}/${total})`;
                         terminalBox.appendChild(logLine);
                         terminalBox.scrollTop = terminalBox.scrollHeight; // အောက်ဆုံးသို့ Auto Scroll ဆွဲရန်
                     }
